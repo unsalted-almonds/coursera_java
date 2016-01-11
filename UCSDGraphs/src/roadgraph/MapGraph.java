@@ -8,7 +8,13 @@
 package roadgraph;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -25,6 +31,16 @@ import util.GraphLoader;
 public class MapGraph {
 	//TODO: Add your member variables here in WEEK 2
 	
+	// vertices, edges (this is done by using adjacency list)
+	// this graph is sparse by nature, so using adjList is better 
+	
+	// here the list is the points which can be accessed from the Map Key (not necessarily neighbors as it's a directed graph)
+	// since there are attributes associated with each edge, here I use a Map to store them
+	// private Map<GeographicPoint,List<Map<String,GeographicPoint>>> adjList;
+	private Map<GeographicPoint,Map<GeographicPoint,Map<String,String>>> adjList;
+
+	private int numVertices;
+	private int numEdges;
 	
 	/** 
 	 * Create a new empty MapGraph 
@@ -32,6 +48,15 @@ public class MapGraph {
 	public MapGraph()
 	{
 		// TODO: Implement in this constructor in WEEK 2
+		//this.adjList = new HashMap<GeographicPoint,List<Map<String,GeographicPoint>>>();
+		this.adjList = new HashMap<GeographicPoint,Map<GeographicPoint,Map<String,String>>>();
+		
+		//this.rawLink = new HashMap<GeographicPoint,Set<GeographicPoint>>();
+		
+		// have numEdges increments each time an edge is added, 
+		// this is more efficient than calculating from adjList on the fly  
+		this.numEdges = 0;
+		this.numVertices = 0;
 	}
 	
 	/**
@@ -41,7 +66,7 @@ public class MapGraph {
 	public int getNumVertices()
 	{
 		//TODO: Implement this method in WEEK 2
-		return 0;
+		return this.numVertices;
 	}
 	
 	/**
@@ -51,7 +76,8 @@ public class MapGraph {
 	public Set<GeographicPoint> getVertices()
 	{
 		//TODO: Implement this method in WEEK 2
-		return null;
+		// it's all keys of the adjList
+		return this.adjList.keySet();
 	}
 	
 	/**
@@ -61,7 +87,7 @@ public class MapGraph {
 	public int getNumEdges()
 	{
 		//TODO: Implement this method in WEEK 2
-		return 0;
+		return this.numEdges;
 	}
 
 	
@@ -76,8 +102,20 @@ public class MapGraph {
 	public boolean addVertex(GeographicPoint location)
 	{
 		// TODO: Implement this method in WEEK 2
-		return false;
+		
+		// check
+		// parent class of GeographicPoint should have properly implemented hashcode and equals method
+		// so using containsKey method compares value rather than reference 
+			if(location == null || this.adjList.containsKey(location))
+				return false;
+		
+		this.adjList.put(location, new HashMap<GeographicPoint,Map<String,String>>());
+		
+		this.numVertices++;
+		
+		return true;
 	}
+	
 	
 	/**
 	 * Adds a directed edge to the graph from pt1 to pt2.  
@@ -95,6 +133,23 @@ public class MapGraph {
 			String roadType, double length) throws IllegalArgumentException {
 
 		//TODO: Implement this method in WEEK 2
+		
+		if (!isPointInMap(from)||!isPointInMap(to)||roadName == null || roadType == null || length < 0)
+				throw new IllegalArgumentException("One of the Arguments is not Valid");
+		
+		// check if there's already an edge
+		boolean isLinked = this.adjList.get(from).containsKey(to);	
+		
+		Map<String,String> newEdge = new HashMap<String,String>();
+		newEdge.put("roadName", roadName);
+		newEdge.put("roadType", roadType);
+		newEdge.put("length", ""+length);
+		
+		// add to to from's list
+		this.adjList.get(from).put(to,newEdge);
+		// increment edge number if this is a newly created link
+		if (!isLinked)
+			this.numEdges++;
 		
 	}
 	
@@ -120,15 +175,77 @@ public class MapGraph {
 	 * @return The list of intersections that form the shortest (unweighted)
 	 *   path from start to goal (including both start and goal).
 	 */
-	public List<GeographicPoint> bfs(GeographicPoint start, 
-			 					     GeographicPoint goal, Consumer<GeographicPoint> nodeSearched)
-	{
+	public List<GeographicPoint> bfs(GeographicPoint start, GeographicPoint goal,
+			Consumer<GeographicPoint> nodeSearched) {
 		// TODO: Implement this method in WEEK 2
-		
-		// Hook for visualization.  See writeup.
-		//nodeSearched.accept(next.getLocation());
 
-		return null;
+		// Hook for visualization. See writeup.
+		// nodeSearched.accept(next.getLocation());
+
+		// first make sure points are in the graph
+		if (!isPointInMap(start) || !isPointInMap(goal))
+			return null;
+
+		Queue<GeographicPoint> myQ = new LinkedList<GeographicPoint>();
+		Set<GeographicPoint> visited = new HashSet<GeographicPoint>();
+
+		// lastStep stores current point as key, its last point as parent
+		Map<GeographicPoint, GeographicPoint> lastStep = new HashMap<GeographicPoint, GeographicPoint>();
+
+		myQ.add(start);
+
+		lastStep.put(start, null);
+
+		boolean hasPath = false;
+
+		while (!myQ.isEmpty()) {
+			// get and remove first element from the queue
+			GeographicPoint point = myQ.poll();
+			visited.add(point);
+			nodeSearched.accept(point);
+			if (point.equals(goal)) {
+				hasPath = true;
+				break;
+			}
+
+			// insert its neighbor into the queue
+			for (GeographicPoint p : this.adjList.get(point).keySet()) {
+				if(!visited.contains(p)){
+					myQ.add(p);
+					// last step is current point
+					lastStep.put(p, point);
+				}
+			}
+		}
+
+		//System.out.println("searching complete: " + hasPath);
+
+		//System.out.println(lastStep);
+		
+		return (hasPath) ? buildPath(start, goal, lastStep) : null;
+	}
+	
+	// this is called when there's a path, otherwise it is a infinite loop!
+	private List<GeographicPoint> buildPath(GeographicPoint start, GeographicPoint goal,
+			Map<GeographicPoint, GeographicPoint> lastStep) {
+		if (!lastStep.containsKey(goal))
+			return null;
+		else {
+			LinkedList<GeographicPoint> path = new LinkedList<GeographicPoint>();
+			GeographicPoint parentPoint = lastStep.get(goal);
+			path.addFirst(goal);
+			while (parentPoint != null) {
+				path.addFirst(parentPoint);
+				parentPoint = lastStep.get(parentPoint);
+			}
+
+			return path;
+		}
+
+	}
+	
+	private boolean isPointInMap(GeographicPoint point){
+		return this.adjList.containsKey(point);
 	}
 	
 

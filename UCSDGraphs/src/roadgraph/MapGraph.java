@@ -7,8 +7,6 @@
  */
 package roadgraph;
 
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -17,7 +15,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Consumer;
-
 import geography.GeographicPoint;
 import util.GraphLoader;
 
@@ -29,34 +26,18 @@ import util.GraphLoader;
  *
  */
 public class MapGraph {
-	//TODO: Add your member variables here in WEEK 2
-	
-	// vertices, edges (this is done by using adjacency list)
-	// this graph is sparse by nature, so using adjList is better 
-	
-	// here the list is the points which can be accessed from the Map Key (not necessarily neighbors as it's a directed graph)
-	// since there are attributes associated with each edge, here I use a Map to store them
-	// private Map<GeographicPoint,List<Map<String,GeographicPoint>>> adjList;
-	private Map<GeographicPoint,Map<GeographicPoint,Map<String,String>>> adjList;
+	//TODO: Add your member variables here in WEEK 2	
 
-	private int numVertices;
+	// keep number of edges updated for preventing calculating 
 	private int numEdges;
-	
+	private AdjacencyList adjList;		
 	/** 
 	 * Create a new empty MapGraph 
 	 */
 	public MapGraph()
 	{
 		// TODO: Implement in this constructor in WEEK 2
-		//this.adjList = new HashMap<GeographicPoint,List<Map<String,GeographicPoint>>>();
-		this.adjList = new HashMap<GeographicPoint,Map<GeographicPoint,Map<String,String>>>();
-		
-		//this.rawLink = new HashMap<GeographicPoint,Set<GeographicPoint>>();
-		
-		// have numEdges increments each time an edge is added, 
-		// this is more efficient than calculating from adjList on the fly  
-		this.numEdges = 0;
-		this.numVertices = 0;
+		this.adjList = new AdjacencyList();
 	}
 	
 	/**
@@ -66,7 +47,7 @@ public class MapGraph {
 	public int getNumVertices()
 	{
 		//TODO: Implement this method in WEEK 2
-		return this.numVertices;
+		return this.adjList.getNumVertices();
 	}
 	
 	/**
@@ -76,8 +57,7 @@ public class MapGraph {
 	public Set<GeographicPoint> getVertices()
 	{
 		//TODO: Implement this method in WEEK 2
-		// it's all keys of the adjList
-		return this.adjList.keySet();
+		return this.adjList.getVertices();
 	}
 	
 	/**
@@ -90,8 +70,6 @@ public class MapGraph {
 		return this.numEdges;
 	}
 
-	
-	
 	/** Add a node corresponding to an intersection at a Geographic Point
 	 * If the location is already in the graph or null, this method does 
 	 * not change the graph.
@@ -99,21 +77,10 @@ public class MapGraph {
 	 * @return true if a node was added, false if it was not (the node
 	 * was already in the graph, or the parameter is null).
 	 */
-	public boolean addVertex(GeographicPoint location)
-	{
+	public boolean addVertex(GeographicPoint location) {
 		// TODO: Implement this method in WEEK 2
-		
-		// check
-		// parent class of GeographicPoint should have properly implemented hashcode and equals method
-		// so using containsKey method compares value rather than reference 
-			if(location == null || this.adjList.containsKey(location))
-				return false;
-		
-		this.adjList.put(location, new HashMap<GeographicPoint,Map<String,String>>());
-		
-		this.numVertices++;
-		
-		return true;
+		// check logic is already in addVertex in AdjacencyList
+		return this.adjList.addVertex(location);
 	}
 	
 	
@@ -134,23 +101,17 @@ public class MapGraph {
 
 		//TODO: Implement this method in WEEK 2
 		
-		if (!isPointInMap(from)||!isPointInMap(to)||roadName == null || roadType == null || length < 0)
+		if (!isVertexInMap(from)||!isVertexInMap(to)||roadName == null || roadType == null || length < 0)
 				throw new IllegalArgumentException("One of the Arguments is not Valid");
-		
+
 		// check if there's already an edge
-		boolean isLinked = this.adjList.get(from).containsKey(to);	
+		boolean isLinked = (this.adjList.isNeighbor(from, to))?true:false;
 		
-		Map<String,String> newEdge = new HashMap<String,String>();
-		newEdge.put("roadName", roadName);
-		newEdge.put("roadType", roadType);
-		newEdge.put("length", ""+length);
-		
-		// add to to from's list
-		this.adjList.get(from).put(to,newEdge);
+		// add to to as from's neighbor
+		this.adjList.addNeibghor(from, to, new MapEdge(from,to,roadName,roadType,length));
 		// increment edge number if this is a newly created link
 		if (!isLinked)
-			this.numEdges++;
-		
+			this.numEdges++;	
 	}
 	
 
@@ -181,15 +142,15 @@ public class MapGraph {
 
 		// Hook for visualization. See writeup.
 		// nodeSearched.accept(next.getLocation());
-
+		
 		// first make sure points are in the graph
-		if (!isPointInMap(start) || !isPointInMap(goal))
+		if (!isVertexInMap(start) || !isVertexInMap(goal))
 			return null;
 
 		Queue<GeographicPoint> myQ = new LinkedList<GeographicPoint>();
 		Set<GeographicPoint> visited = new HashSet<GeographicPoint>();
 
-		// lastStep stores current point as key, its last point as parent
+		// lastStep stores current point as key, its parent point as value
 		Map<GeographicPoint, GeographicPoint> lastStep = new HashMap<GeographicPoint, GeographicPoint>();
 
 		myQ.add(start);
@@ -209,7 +170,7 @@ public class MapGraph {
 			}
 
 			// insert its neighbor into the queue
-			for (GeographicPoint p : this.adjList.get(point).keySet()) {
+			for (GeographicPoint p : this.adjList.getNeighbors(point)) {
 				if(!visited.contains(p)){
 					myQ.add(p);
 					// last step is current point
@@ -217,18 +178,14 @@ public class MapGraph {
 				}
 			}
 		}
-
-		//System.out.println("searching complete: " + hasPath);
-
-		//System.out.println(lastStep);
 		
 		return (hasPath) ? buildPath(start, goal, lastStep) : null;
 	}
 	
-	// this is called when there's a path, otherwise it is a infinite loop!
+	// call to build path from start to goal
 	private List<GeographicPoint> buildPath(GeographicPoint start, GeographicPoint goal,
 			Map<GeographicPoint, GeographicPoint> lastStep) {
-		if (!lastStep.containsKey(goal))
+		if (!lastStep.containsKey(goal)||!lastStep.containsKey(start))
 			return null;
 		else {
 			LinkedList<GeographicPoint> path = new LinkedList<GeographicPoint>();
@@ -244,8 +201,8 @@ public class MapGraph {
 
 	}
 	
-	private boolean isPointInMap(GeographicPoint point){
-		return this.adjList.containsKey(point);
+	private boolean isVertexInMap(GeographicPoint point){
+		return this.adjList.isInMap(point);
 	}
 	
 

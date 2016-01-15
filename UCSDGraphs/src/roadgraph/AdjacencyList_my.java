@@ -6,18 +6,18 @@ import java.util.Set;
 
 import geography.GeographicPoint;
 
-public class AdjacencyList {
+public class AdjacencyList_my {
 
 	// use Map to build adjacency list to ensure good performance
 	// edge information is also stored here for easy retrieval
-	private Map<GeographicPoint, Map<GeographicPoint, MapEdge>> adjList;
+	private Map<GeographicPoint, Map<GeographicPoint, MapEdge_my>> adjList;
 
-	public AdjacencyList() {
-		adjList = new HashMap<GeographicPoint, Map<GeographicPoint, MapEdge>>();
+	public AdjacencyList_my() {
+		adjList = new HashMap<GeographicPoint, Map<GeographicPoint, MapEdge_my>>();
 	}
 
 	// package access 
-	Map<GeographicPoint, Map<GeographicPoint, MapEdge>> getAdjList() {
+	Map<GeographicPoint, Map<GeographicPoint, MapEdge_my>> getAdjList() {
 		return adjList;
 	}
 
@@ -26,14 +26,14 @@ public class AdjacencyList {
 		if (this.isInMap(vertex) || vertex == null)
 			return false;
 
-		this.getAdjList().put(vertex, new HashMap<GeographicPoint, MapEdge>());
+		this.getAdjList().put(vertex, new HashMap<GeographicPoint, MapEdge_my>());
 
 		return true;
 	}
 
 	// add a neighbor vertex which can be accessed FROM this vertex
 	// replace existing edge attributes if the neighbor already exists
-	public boolean addNeibghor(GeographicPoint from, GeographicPoint to, MapEdge edge) {
+	public boolean addNeibghor(GeographicPoint from, GeographicPoint to, MapEdge_my edge) {
 		// don't add if edge is not correct
 		if (!edge.getStartVertex().equals(from) || !edge.getEndVertex().equals(to)
 				|| !this.getAdjList().containsKey(from) || !this.getAdjList().containsKey(to))
@@ -77,7 +77,7 @@ public class AdjacencyList {
 
 	// return the edge from from to to
 	// returns null if there is no edge
-	public MapEdge getEdge(GeographicPoint from, GeographicPoint to) {
+	public MapEdge_my getEdge(GeographicPoint from, GeographicPoint to) {
 		if (!this.isInMap(from))
 			return null;
 

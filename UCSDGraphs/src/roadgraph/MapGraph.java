@@ -346,9 +346,13 @@ public class MapGraph {
 		visited.add(startNode);
 		MapNode next = null;
 		
+		int loopCount = 0;
+		
 		while (!minHeap.isEmpty()){
 			
 			next = minHeap.poll();
+			
+			loopCount++;
 			
 			if (next.equals(endNode))
 				break;
@@ -377,6 +381,8 @@ public class MapGraph {
 				
 			}	
 		}
+		
+		System.out.println(loopCount);
 		
 		if(!(next.equals(endNode)))
 			return null;
@@ -418,8 +424,82 @@ public class MapGraph {
 		
 		// Hook for visualization.  See writeup.
 		//nodeSearched.accept(next.getLocation());
+		if (start == null || goal == null)
+			throw new NullPointerException("Cannot find route from or to null node");
+		MapNode startNode = pointNodeMap.get(start);
+		MapNode endNode = pointNodeMap.get(goal);
+		if (startNode == null) {
+			System.err.println("Start node " + start + " does not exist");
+			return null;
+		}
+		if (endNode == null) {
+			System.err.println("End node " + goal + " does not exist");
+			return null;
+		}
 		
-		return null;
+		HashMap<MapNode,MapNode> parentMap = new HashMap<MapNode,MapNode>();
+		//Queue<MapNode> toExplore = new LinkedList<MapNode>();
+		HashSet<MapNode> visited = new HashSet<MapNode>();
+		
+		PriorityQueue<MapNode> minHeap =  new PriorityQueue<MapNode>();
+		// actual distance is the real distance from start node to this node
+		startNode.setActualDistance(0);
+		// distance is the predicated distance from this start through this node to goal 
+		startNode.setDistance(startNode.getLocation().distance(goal) + startNode.getActualDistance());
+		minHeap.add(startNode);
+		parentMap.put(startNode,null);
+		visited.add(startNode);
+		MapNode next = null;
+		
+		int loopCount = 0;
+		while (!minHeap.isEmpty()){
+			
+			next = minHeap.poll();
+			
+			loopCount++;
+			
+			if (next.equals(endNode))
+				break;
+					
+			nodeSearched.accept(next.getLocation());
+			
+			for (MapEdge edge : next.getEdges()){
+				MapNode neighbor = edge.getOtherNode(next);
+				
+				if (visited.contains(neighbor)){
+					if(neighbor.getDistance()> (next.getActualDistance() + edge.getLength() + neighbor.getLocation().distance(goal))){
+						// to change an element already in the heap
+						// remove it and re-insert it to re-heap the heap 
+						minHeap.remove(neighbor);
+						neighbor.setActualDistance(next.getActualDistance() + edge.getLength());
+						neighbor.setDistance(next.getActualDistance() + edge.getLength() + neighbor.getLocation().distance(goal));
+						minHeap.add(neighbor);
+						parentMap.put(neighbor,next);
+					}
+						
+				}else{
+					neighbor.setActualDistance(next.getActualDistance() + edge.getLength());
+					neighbor.setDistance(next.getActualDistance() + edge.getLength() + neighbor.getLocation().distance(goal));
+					visited.add(neighbor);
+					minHeap.add(neighbor);
+					parentMap.put(neighbor,next);					
+				}
+				
+			}	
+		}
+		
+		System.out.println(loopCount);
+		
+		if(!(next.equals(endNode)))
+			return null;
+		
+		//System.out.println(parentMap);
+		
+		// Reconstruct the parent path
+		List<GeographicPoint> path =
+				reconstructPath(parentMap, startNode, endNode);
+
+		return path;		
 	}
 
 
@@ -454,6 +534,7 @@ public class MapGraph {
 		*/
 			
 		// Use this code in Week 3 End of Week Quiz
+		/*
 		MapGraph theMap = new MapGraph();
 		System.out.print("DONE. \nLoading the map...");
 		GraphLoader.loadRoadMap("data/maps/utc.map", theMap);
@@ -463,9 +544,18 @@ public class MapGraph {
 		GeographicPoint end = new GeographicPoint(32.868629, -117.215393);
 		
 		List<GeographicPoint> route = theMap.dijkstra(start,end);
-		//List<GeographicPoint> route2 = theMap.aStarSearch(start,end);
-	
-				
+		List<GeographicPoint> route2 = theMap.aStarSearch(start,end);
+		*/
+		MapGraph theMap = new MapGraph();
+		System.out.print("DONE. \nLoading the map...");
+		GraphLoader.loadRoadMap("data/maps/utc.map", theMap);
+		System.out.println("DONE.");
+
+		GeographicPoint start = new GeographicPoint(32.8648772, -117.2254046);
+		GeographicPoint end = new GeographicPoint(32.8660691, -117.217393);
+
+		List<GeographicPoint> route = theMap.dijkstra(start,end);
+		List<GeographicPoint> route2 = theMap.aStarSearch(start,end);
 	}
 
 }

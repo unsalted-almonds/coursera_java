@@ -142,6 +142,10 @@ public class SAXLocalNameCount extends DefaultHandler {
         if (value == null) {
             // Add a new entry
             tags.put(key, new Integer(1));
+            
+    		//System.out.println("startElemen  namespaceURI: " + namespaceURI + " localName:" + localName + " qName:" + qName
+    		//		+ " atts:" + atts);
+    				
         } else {
             // Get the current count and increment it
             int count = ((Integer)value).intValue();

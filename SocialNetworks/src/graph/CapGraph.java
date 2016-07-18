@@ -25,7 +25,16 @@ public class CapGraph implements Graph {
 	 */
 	
 	// use adjacency list/set 
-	HashMap<Integer, HashSet<Integer>> adjList = new HashMap<Integer, HashSet<Integer>>();
+	public HashMap<Integer, HashSet<Integer>> adjList = new HashMap<Integer, HashSet<Integer>>();
+	
+	//Map<Integer, Map<String,Set<Integer>>> circles = new HashMap<Integer, Map<String,Set<Integer>>>();
+	
+	Map<Integer, Map<String,Set<Integer>>> circles = new HashMap<Integer, Map<String,Set<Integer>>>();
+	
+	
+	public void addCircle(Integer egoNode, Map<String,Set<Integer>> circle){
+		circles.put(egoNode, circle);
+	}
 	
 	@Override
 	public void addVertex(int num) {
@@ -51,7 +60,7 @@ public class CapGraph implements Graph {
 	@Override
 	public Graph getEgonet(int center) {
 		
-		CapGraph res = new CapGraph();
+		CapGraphOld res = new CapGraphOld();
 		
 		if (this.adjList.containsKey(center)){						
 			res.addVertex(center);
@@ -176,7 +185,7 @@ public class CapGraph implements Graph {
 		return res;
 	}
 	
-	// create sub graph of the orignal graph using given vertices 
+	// create sub graph of the original graph using given vertices 
 	private CapGraph subGraph(CapGraph g, Stack<Integer> vertices){
 		CapGraph res = new CapGraph();
 		

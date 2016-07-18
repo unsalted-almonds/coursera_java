@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Scanner;
-import graph.CapGraph;
+import graph.CapGraphOld;
 import graph.Graph;
 
 public class SCCGrader extends Grader {
@@ -63,7 +63,7 @@ public class SCCGrader extends Grader {
         try {
 
             for(int i = 0; i < 10; i++) {
-                Graph g = new CapGraph();
+                Graph g = new CapGraphOld();
                 Set<Integer> vertices;
 
                 String answerFile = "data/scc_answers/scc_" + (i + 1) + ".txt";

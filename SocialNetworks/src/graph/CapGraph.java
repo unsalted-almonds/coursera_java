@@ -11,202 +11,63 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-/**
- * @author Your name here.
- * 
- * For the warm up assignment, you must implement your Graph in a class
- * named CapGraph.  Here is the stub file.
- *
- */
-public class CapGraph implements Graph {
 
-	/* (non-Javadoc)
-	 * @see graph.Graph#addVertex(int)
-	 */
+public class CapGraph  {
 	
-	// use adjacency list/set 
-	public HashMap<Integer, HashSet<Integer>> adjList = new HashMap<Integer, HashSet<Integer>>();
+	private CapAdjList adjList = new CapAdjList();
 	
-	//Map<Integer, Map<String,Set<Integer>>> circles = new HashMap<Integer, Map<String,Set<Integer>>>();
+	//private CapNodeVectorMap nodeVector = new CapNodeVectorMap();
 	
-	Map<Integer, Map<String,Set<Integer>>> circles = new HashMap<Integer, Map<String,Set<Integer>>>();
-	
-	
-	public void addCircle(Integer egoNode, Map<String,Set<Integer>> circle){
-		circles.put(egoNode, circle);
-	}
-	
-	@Override
-	public void addVertex(int num) {
-		if (!adjList.containsKey(num))
-			adjList.put(num, new HashSet<Integer>());
-	}
+	private CapCircleMap circles = new CapCircleMap();
 
-	/* (non-Javadoc)
-	 * @see graph.Graph#addEdge(int, int)
-	 */
-	@Override
-	public void addEdge(int from, int to) {
+	public void addEdge(Integer from, Integer to, Integer weight){
+		adjList.addEdge(from, to, weight);
+	};
 
-		if (adjList.containsKey(from))
-			adjList.get(from).add(to);
-		else
-			adjList.put(from, new HashSet<Integer>());
-	}
-
-	/* (non-Javadoc)
-	 * @see graph.Graph#getEgonet(int)
-	 */
-	@Override
-	public Graph getEgonet(int center) {
-		
-		CapGraphOld res = new CapGraphOld();
-		
-		if (this.adjList.containsKey(center)){						
-			res.addVertex(center);
-			// add all vertices and edges from center to them
-			for(Integer i : this.listEdgeFromVertex(center)){
-				res.addVertex(i);
-				res.addEdge(center, i);
-			}
-			// add all edges inter-connected 
-			for (Integer i : res.listVerices()){
-				// skip center 
-				if ( !i.equals(center)){					
-					for (Integer p : this.listEdgeFromVertex(i)){						
-						if (res.listVerices().contains(p))
-							res.addEdge(i, p);						
-					}					
-				}
-			}			
-		}
-		
-		return res;
-	}
-
-	/* (non-Javadoc)
-	 * @see graph.Graph#getSCCs()
-	 */
-	@Override
-	public List<Graph> getSCCs() {
-		// TODO Auto-generated method stub
-		
-		Stack<Integer> verticesStack = this.stackifyVertices(this.listVerices());
-		
-		verticesStack = this.graphTraversal(this, verticesStack);
-				
-		return this.graphTraversalSecond(this.transposeGraph(this), verticesStack);
-	}
-
-	/* (non-Javadoc)
-	 * @see graph.Graph#exportGraph()
-	 */
-	@Override
-	public HashMap<Integer, HashSet<Integer>> exportGraph() {
-		return this.adjList;
+	public void addEdge(Integer from, Integer to){
+		adjList.addEdge(from, to);
+	};
+	
+	public boolean applyWeight(Integer from, Integer to, Integer weight){
+		return adjList.setWeight(from, to, weight);
+	};
+	
+	public void initWeight(){
+		adjList.initWeight();
 	}
 	
-	public Set<Integer> listVerices(){
-		return this.adjList.keySet();
+	public void printEdgeFromNode(Integer nodeVal){
+		adjList.printEdgeByNode(nodeVal);
 	}
 	
-	public Set<Integer> listEdgeFromVertex(int num){
-		Set<Integer> res = null;
-		
-		if (this.adjList.containsKey(num))
-			res = this.adjList.get(num);
-		
-		return res;
+	public void addNodeVectorByNode(Integer nodeVal, List<Boolean> vector){
+		adjList.addVector(nodeVal, vector);
 	}
 	
-	
-	private Stack<Integer> graphTraversal(CapGraph g, Stack<Integer> verticesStack){
-
-		Set<Integer> visited = new HashSet<Integer>();
-		Stack<Integer> finished = new Stack<Integer>();
-		
-		while (!verticesStack.isEmpty()){			
-			Integer vertex = verticesStack.pop();			
-			if (!visited.contains(vertex))
-				graphTraversal(g, vertex, visited ,finished);						
-		}
-		
-		return finished;
-	}
-
-	private List<Graph> graphTraversalSecond(CapGraph g, Stack<Integer> verticesStack){
-
-		Set<Integer> visited = new HashSet<Integer>();
-		Stack<Integer> finished = new Stack<Integer>();
-		
-		List<Graph> res = new ArrayList<Graph>();
-		
-		while (!verticesStack.isEmpty()){			
-			Integer vertex = verticesStack.pop();			
-			if (!visited.contains(vertex)){
-				graphTraversal(g, vertex, visited ,finished);
-				res.add(subGraph(g, finished));
-			}			
-		}
-		
-		return res;
+	public boolean hasVector(Integer nodeVal){
+		return adjList.hasVector(nodeVal);
 	}
 	
-	private void graphTraversal(CapGraph g, Integer vertex, Set<Integer> visited ,Stack<Integer> finished){
-		
-		visited.add(vertex);
-		
-		for (Integer neighbor : g.listEdgeFromVertex(vertex)){
-			
-			if (!visited.contains(neighbor))
-				graphTraversal(g, neighbor, visited ,finished);
-		}		
-		finished.push(vertex);		
+	public List<Boolean> getVectorByNode(Integer nodeVal){
+		if (adjList.hasVector(nodeVal))
+			return adjList.getVectorByNodeVal(nodeVal);
+		return null;
 	}
 	
-	private CapGraph transposeGraph(CapGraph g) {
-
-		CapGraph res = new CapGraph();
-
-		for (Integer i : g.listVerices()) {			
-			res.addVertex(i);			
-			for (Integer p : g.listEdgeFromVertex(i)){
-				res.addVertex(p);
-				res.addEdge(p, i);
-			}
-		}
-		return res;
+	public void setVector(Integer nodeVal, List<Boolean> vector){
+		adjList.setVector(nodeVal, vector);
 	}
 	
-	private Stack<Integer> stackifyVertices(Set<Integer> vertices){
-		Stack<Integer> res = new Stack<Integer>();
-		for (Integer i : vertices)
-			res.push(i);
-		return res;
+	public void printVectorByNode(Integer nodeVal){
+		adjList.printVectorByNode(nodeVal);
 	}
 	
-	// create sub graph of the original graph using given vertices 
-	private CapGraph subGraph(CapGraph g, Stack<Integer> vertices){
-		CapGraph res = new CapGraph();
-		
-		while (!vertices.isEmpty()){		
-			Integer vertex = vertices.pop();
-			res.addVertex(vertex);
-			for (Integer neighbor : g.listEdgeFromVertex(vertex)){
-				if (vertices.contains(neighbor))
-					res.addEdge(vertex, neighbor);
-			}
-		}
-		/*
-		for (Integer vertex : vertices){
-			res.addVertex(vertex);
-			for (Integer neighbor : g.listEdgeFromVertex(vertex)){
-				if (vertices.contains(neighbor))
-					res.addEdge(vertex, neighbor);
-			}
-		}*/
-		
-		return res;
+	public void setCircle(Integer egoNodeVal, String circleName, List<Integer> members){
+		circles.setCircle(egoNodeVal, circleName, members);
+	}
+	
+	public void printCirclesByEgoNode(Integer egoNodeVal){
+		circles.printCirclesByEgoNode(egoNodeVal);
 	}
 	
 }

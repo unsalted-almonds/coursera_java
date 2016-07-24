@@ -1,11 +1,23 @@
 package graph;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CapNode {
 	
 	private Integer val;
 	private List<Boolean> feat;
+	
+	public CapNode (Integer nodeVal, Integer featSize){
+		val = nodeVal;
+		initFeatVector(featSize);
+	}
+	
+	//init vector to the actual size and set it to all false;
+	private void initFeatVector(Integer featSize){
+		feat = new ArrayList<Boolean>(Collections.nCopies(featSize, false));		
+	}
 	
 	public Integer getVal() {
 		return val;

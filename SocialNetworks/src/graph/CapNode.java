@@ -4,16 +4,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CapNode {
+public class CapNode implements Comparable<CapNode> {
 	
 	private Integer val;
 	private List<Boolean> feat;
-	
+	// this is for using in Dijkstra algorithm 
+	private Integer dist = Integer.MAX_VALUE;
+	/*
 	public CapNode (Integer nodeVal, Integer featSize){
 		val = nodeVal;
 		initFeatVector(featSize);
 	}
-	
+	*/	
+	public CapNode(Integer val, Integer dist) {
+		super();
+		this.val = val;
+		this.dist = dist;
+	}
+
 	//init vector to the actual size and set it to all false;
 	private void initFeatVector(Integer featSize){
 		feat = new ArrayList<Boolean>(Collections.nCopies(featSize, false));		
@@ -32,6 +40,14 @@ public class CapNode {
 		this.feat = feat;
 	}
 	
+	public Integer getDist() {
+		return dist;
+	}
+
+	public void setDist(Integer dist) {
+		this.dist = dist;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -55,5 +71,13 @@ public class CapNode {
 			return false;
 		return true;
 	}
+
+	@Override
+	public int compareTo(CapNode o) {
+		// TODO Auto-generated method stub
+		return Integer.compare(dist,o.getDist());
+	}
+
+
 	
 }

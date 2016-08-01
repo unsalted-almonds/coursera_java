@@ -11,6 +11,7 @@ import java.util.Set;
 
 public class CapAdjList {
 
+	// from node      to node   weight
 	Map<Integer, Map<Integer, Integer>> adjList = new HashMap<Integer, Map<Integer, Integer>>();
 
 	CapNodeVectorMap vectorMap = new CapNodeVectorMap();
@@ -36,9 +37,21 @@ public class CapAdjList {
 				weight++;
 		}
 
-		System.out.println("weight from " + from + " to " + to + " is " + weight);
+		//System.out.println("weight from " + from + " to " + to + " is " + weight);
 
 		return weight;
+	}
+	
+	public List<Integer> getNeighborsFrom(Integer nodeVal) {
+		List<Integer> res = new ArrayList<Integer>();
+		if (hasNode(nodeVal)) {
+			Map<Integer, Integer> edges = adjList.get(nodeVal);
+
+			for (Integer val : edges.keySet()) {
+				res.add(val);
+			}
+		}
+		return res;
 	}
 
 	public void addNode(Integer nodeVal) {
@@ -78,19 +91,16 @@ public class CapAdjList {
 	}
 
 	public List<CapEdge> getEdgefrom(Integer from) {
+		List<CapEdge> edgeList = new ArrayList<CapEdge>();
 		if (adjList.containsKey(from)) {
-
-			List<CapEdge> edgeList = new ArrayList<CapEdge>();
 			for (Entry<Integer, Integer> entry : adjList.get(from).entrySet()) {
 				edgeList.add(new CapEdge(from, entry.getKey(), entry.getValue()));
 			}
-
-			return edgeList;
-		} else
-			return null;
+		}
+		return edgeList;
 	}
 
-	private boolean hasNode(Integer from) {
+	public boolean hasNode(Integer from) {
 		if (adjList.containsKey(from))
 			return true;
 		return false;

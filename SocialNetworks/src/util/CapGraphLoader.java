@@ -33,29 +33,29 @@ public class CapGraphLoader {
 
 	public static void main(String args[]) throws Exception {
 		CapGraph g = new CapGraph();
-/*
-		featSize = analyzeFeat(new File("data/facebook"));
-		
-		System.out.println("feat size is " + featSize);
-
-		System.out.println(featLookup.get(1684));
-
-		
-
-		loadEdges(g, "data/facebook/0.edges", "0.edges");
-
-		g.printEdgeFromNode(329);
-
-		loadFeat(g, "data/facebook/0.egofeat", "0.egofeat");
-
-		g.printVectorByNode(0);
-
-		loadFeat(g, "data/facebook/0.feat", "0.feat");
-
-		g.printVectorByNode(69);
-*/		
+		/*
+		 * featSize = analyzeFeat(new File("data/facebook"));
+		 * 
+		 * System.out.println("feat size is " + featSize);
+		 * 
+		 * System.out.println(featLookup.get(1684));
+		 * 
+		 * 
+		 * 
+		 * loadEdges(g, "data/facebook/0.edges", "0.edges");
+		 * 
+		 * g.printEdgeFromNode(329);
+		 * 
+		 * loadFeat(g, "data/facebook/0.egofeat", "0.egofeat");
+		 * 
+		 * g.printVectorByNode(0);
+		 * 
+		 * loadFeat(g, "data/facebook/0.feat", "0.feat");
+		 * 
+		 * g.printVectorByNode(69);
+		 */
 		loadCapGraph(g);
-		
+
 		g.printVectorByNode(69);
 		g.printVectorByNode(861);
 		g.printVectorByNode(0);
@@ -83,22 +83,22 @@ public class CapGraphLoader {
 			}
 
 			fileType = fileNameToken[1];
-			
-			switch (fileType){
+
+			switch (fileType) {
 			case FILE_TYPE_EDGES:
 				loadEdges(g, filePath, fileName);
 				break;
-			case 	FILE_TYPE_FEAT:
+			case FILE_TYPE_FEAT:
 				loadFeat(g, filePath, fileName);
 				break;
-			case 	FILE_TYPE_EGOFEAT:
+			case FILE_TYPE_EGOFEAT:
 				loadFeat(g, filePath, fileName);
-				break;	
+				break;
 			case FILE_TYPE_CIRCLES:
 				loadCircles(g, filePath, fileName);
 			}
 		}
-		
+
 		g.initWeight();
 	}
 
@@ -203,7 +203,7 @@ public class CapGraphLoader {
 			throw new IllegalArgumentException("File " + filePath + " has problem, skipping ...");
 		}
 		Integer egoNodeVal = Integer.parseInt(fileNameToken[0]);
-		
+
 		System.out.println("process feat in egonode " + egoNodeVal);
 
 		String fileLine;
@@ -216,25 +216,26 @@ public class CapGraphLoader {
 			// System.out.println(fileLine);
 			fileLineToken = new ArrayList<String>(Arrays.asList(fileLine.split(" ")));
 
-
-			if (fileNameToken[1].equals(FILE_TYPE_FEAT)) {				
+			if (fileNameToken[1].equals(FILE_TYPE_FEAT)) {
 				nodeVal = Integer.parseInt(fileLineToken.get(0));
 				if (g.hasVector(nodeVal))
 					vector = g.getVectorByNode(nodeVal);
 				else
 					vector = new ArrayList<Boolean>(Collections.nCopies(featSize, false));
-				
+
 				for (int i = 1; i < fileLineToken.size(); i++) {
 					if (fileLineToken.get(i).equals("1"))
 						vector.set(featLookup.get(egoNodeVal).get(i - 1), true);
 				}
 				g.setVector(nodeVal, vector);
-				if(nodeVal.equals(0)){
+				/* debug statement 
+				if (nodeVal.equals(0)) {
 					System.out.println("set vector for node " + nodeVal);
 					System.out.println("vector value: " + fileLine);
 					g.printVectorByNode(0);
 				}
-				
+				*/
+
 			}
 
 			else if (fileNameToken[1].equals(FILE_TYPE_EGOFEAT)) {
@@ -248,48 +249,48 @@ public class CapGraphLoader {
 						vector.set(featLookup.get(egoNodeVal).get(i), true);
 				}
 				g.setVector(egoNodeVal, vector);
-				if(egoNodeVal.equals(0)){
+				/* debug statement 
+				if (egoNodeVal.equals(0)) {
 					System.out.println("set vector for node " + egoNodeVal);
 					g.printVectorByNode(0);
 				}
-				
+				*/
 			}
 
 		}
 	}
 
-	private static void loadCircles(CapGraph g, String filePath, String fileName){
+	private static void loadCircles(CapGraph g, String filePath, String fileName) {
 		String fileLine;
 		List<String> fileLineToken;
 		String[] fileNameToken = fileName.split("\\.");
 		Integer egoNodeVal = Integer.parseInt(fileNameToken[0]);
 		String circleName;
 		List<Integer> members = new ArrayList<Integer>();
-		
-		if (fileNameToken.length != 2
-				|| !fileNameToken[1].equals(FILE_TYPE_CIRCLES)) {
+
+		if (fileNameToken.length != 2 || !fileNameToken[1].equals(FILE_TYPE_CIRCLES)) {
 			throw new IllegalArgumentException("File " + filePath + " has problem, skipping ...");
 		}
-		
-		try (BufferedReader br = new BufferedReader( new FileReader(filePath))) {
-            while( (fileLine = br.readLine()) != null){
-                //System.out.println(fileLine);
-                fileLineToken = new ArrayList<String>(Arrays.asList(fileLine.split(" ")));
-                circleName = fileLineToken.get(0);
-                for (int i = 1; i < fileLineToken.size(); i++){
-                	members.add(Integer.parseInt(fileLineToken.get(i)));
-                }
-            
-                g.setCircle(egoNodeVal, circleName, members);
-                //System.out.println("loaded circles for node: " + egoNode);
-            }
-            
+
+		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+			while ((fileLine = br.readLine()) != null) {
+				// System.out.println(fileLine);
+				fileLineToken = new ArrayList<String>(Arrays.asList(fileLine.split(" ")));
+				circleName = fileLineToken.get(0);
+				for (int i = 1; i < fileLineToken.size(); i++) {
+					members.add(Integer.parseInt(fileLineToken.get(i)));
+				}
+
+				g.setCircle(egoNodeVal, circleName, members);
+				// System.out.println("loaded circles for node: " + egoNode);
+			}
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
-		//System.out.println("members for 0's circle: " + .get(0));
+		}
+		// System.out.println("members for 0's circle: " + .get(0));
 	}
-	
+
 }

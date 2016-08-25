@@ -33,13 +33,21 @@ public class CapAdjList {
 		List<Boolean> toVector = vectorMap.getVectorByNodeVal(to);
 		int weight = 0;
 		for (int i = 0; i < fromVector.size(); i++) {
-			if (!(fromVector.get(i) == true && toVector.get(i) == true))
+			//if (!(fromVector.get(i) == true && toVector.get(i) == true))
+			if (fromVector.get(i) != toVector.get(i))
 				weight++;
 		}
 
-		//System.out.println("weight from " + from + " to " + to + " is " + weight);
+		System.out.println("weight from " + from + " to " + to + " is " + weight);
 
 		return weight;
+	}
+	
+	public List<Integer> getAllNodes(){
+		List<Integer> res = new ArrayList<Integer>();
+		for (Integer nodeVal : adjList.keySet())
+			res.add(nodeVal);
+		return res;
 	}
 	
 	public List<Integer> getNeighborsFrom(Integer nodeVal) {

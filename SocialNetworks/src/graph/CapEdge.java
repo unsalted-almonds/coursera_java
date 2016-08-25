@@ -5,6 +5,7 @@ public class CapEdge {
 	private Integer from;
 	private Integer to;
 	private Integer weight;
+	private Integer traffic;
 	
 	public CapEdge(){}
 	
@@ -36,6 +37,14 @@ public class CapEdge {
 
 	public void setWeight(Integer weight) {
 		this.weight = weight;
+	}
+
+	public Integer getTraffic() {
+		return traffic;
+	}
+
+	public void setTraffic(Integer traffic) {
+		this.traffic = traffic;
 	}
 
 

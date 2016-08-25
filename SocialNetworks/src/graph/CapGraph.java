@@ -22,20 +22,40 @@ public class CapGraph  {
 	//private CapNodeVectorMap nodeVector = new CapNodeVectorMap();
 	
 	private CapCircleMap circles = new CapCircleMap();
-	
-	public static void main (String args[]) throws Exception{
-		
+
+	public static void main(String args[]) throws Exception {
+
 		CapGraph g = new CapGraph();
-		
+
 		CapGraphLoader.loadCapGraph(g);
-		
+
 		Map<Integer, Integer> res = g.shortestPathDijkstra(0);
-		
+
 		System.out.println(res);
+
+		System.out.println(g.buildPath(res, 0, 1400));
+
+		List<Integer> allNodes = g.getAllNodes();
 		
-		System.out.println(g.buildPath(res,0,879));
+		Map<String, Integer> result = new HashMap<String, Integer>();
+
+		for (Integer nodeValFrom : allNodes) {
+			Map<Integer, Integer> backTrackMap = g.shortestPathDijkstra(nodeValFrom);
+			for (Integer nodeValTo : allNodes) {
+				List<Integer> path = g.buildPath(backTrackMap, nodeValFrom, nodeValTo);
+				Integer idx1 = 0;
+				Integer idx2 = 1;
+				if (path.size() > 1){
+					
+				}
+			}
+		}
 		
-		
+		System.out.println("done!");
+	}
+	
+	public List<Integer> getAllNodes(){
+		return adjList.getAllNodes();
 	}
 
 	public List<Integer> buildPath(Map<Integer, Integer> backTrackMap, Integer from, Integer to) {
@@ -97,7 +117,7 @@ public class CapGraph  {
 				}
 				
 				visited.add(minNode.getVal());
-				System.out.println("visited node " + minNode.getVal());
+				//System.out.println("visited node " + minNode.getVal());
 			}
 						
 			return previousNode;

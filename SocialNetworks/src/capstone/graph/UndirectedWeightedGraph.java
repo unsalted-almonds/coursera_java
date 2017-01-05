@@ -10,17 +10,16 @@ public class UndirectedWeightedGraph<V> implements Graph<V> {
 
 	@Override
 	public Boolean addVertex(V vertex) {
-		// TODO Auto-generated method stub
-		return null;
+		return adjacencyList.addVertex(vertex);
 	}
 
 	@Override
-	public Boolean addEdge(V from, V to) {
-		// TODO Auto-generated method stub
-		return null;
+	public Boolean addEdge(V vertexA, V vertexB) {
+		return adjacencyList.addEdge(vertexA, vertexB);
 	}
 
-
+	
+	
 	
 	
 

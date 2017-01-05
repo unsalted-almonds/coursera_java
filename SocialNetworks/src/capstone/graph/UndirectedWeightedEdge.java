@@ -59,6 +59,35 @@ public class UndirectedWeightedEdge<V> {
 		this.v2 = v2;
 	}
 
-	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((v1 == null) ? 0 : v1.hashCode());
+		result = prime * result + ((v2 == null) ? 0 : v2.hashCode());
+		return result;
+	}
+
+	/**
+	 * it is written in the way that v1 and v2's order doesn't matter
+	 * 
+	 * this is probably not needed here!!!
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		@SuppressWarnings("unchecked")
+		UndirectedWeightedEdge<V> other = (UndirectedWeightedEdge<V>) obj;
+		
+		// order of v1 and v2 doesn't matter
+		if ((v1.equals(other.v1) && v2.equals(other.v2)) || (v1.equals(other.v2) && v2.equals(other.v1)))
+			return true;
+		return false;
+	}
 	
 }

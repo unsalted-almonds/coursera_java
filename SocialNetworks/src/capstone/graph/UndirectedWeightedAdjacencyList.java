@@ -2,7 +2,6 @@ package capstone.graph;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * adjacency list that is used to serve undirected weighted graph
@@ -72,15 +71,6 @@ public class UndirectedWeightedAdjacencyList<V> implements AdjacencyList<V>{
 		adjacencyList.get(vertexB).remove(vertexA);
 		
 		return true;
-	}
-	
-	/**
-	 * get all vertices reachable from given vertex
-	 * @param vertex
-	 * @return all vertices reachable from given vertex
-	 */
-	public Set<V> getNeighbors(V vertex){
-		return adjacencyList.get(vertex).keySet();
 	}
 	
 	private Boolean hasVertex(V vertex){

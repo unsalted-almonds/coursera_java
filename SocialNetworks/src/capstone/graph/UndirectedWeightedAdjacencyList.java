@@ -83,7 +83,12 @@ public class UndirectedWeightedAdjacencyList<V> implements AdjacencyList<V>{
 		return adjacencyList.get(vertex).keySet();
 	}
 	
-	private Boolean hasVertex(V vertex){
+	/**
+	 * check if a vertex is present in the graph
+	 * @param vertex
+	 * @return true if present otherwise false
+	 */
+	public Boolean hasVertex(V vertex){
 		return adjacencyList.containsKey(vertex);
 	}
 	

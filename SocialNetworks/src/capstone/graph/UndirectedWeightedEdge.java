@@ -39,6 +39,10 @@ public class UndirectedWeightedEdge<V> {
 		attributes.put(ATTRIBUTE_WEIGHT, String.valueOf(weight));
 	}
 	
+	public void setBetweenness(Integer betweenness){
+		attributes.put(ATTRIBUTE_BETWEENNESS, String.valueOf(betweenness));	
+	}
+	
 	public void incrementBetweenness(Integer betweenness){
 		attributes.put(ATTRIBUTE_BETWEENNESS, String.valueOf(getBetweenness() + betweenness));		
 	}

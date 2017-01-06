@@ -75,6 +75,26 @@ public class UndirectedWeightedAdjacencyList<V> implements AdjacencyList<V>{
 	}
 	
 	/**
+	 * get all vertices
+	 * @return all vertices
+	 */
+	public Set<V> getAllVertices(){
+		return adjacencyList.keySet();
+	}
+	
+	/**
+	 * Get the undirected edge from one vertex to another 
+	 * @param vertexA vertex at one end
+	 * @param vertexB vertex at one end
+	 * @return edge instance if two vertices are connected, null if not 
+	 */
+	public UndirectedWeightedEdge<V> getEdge(V vertexA, V vertexB){
+		if (hasEdge(vertexA,vertexB))
+			return adjacencyList.get(vertexA).get(vertexB);
+		return null;
+	}
+	
+	/**
 	 * get all vertices reachable from given vertex
 	 * @param vertex
 	 * @return all vertices reachable from given vertex
@@ -99,6 +119,47 @@ public class UndirectedWeightedAdjacencyList<V> implements AdjacencyList<V>{
 		adjacencyList.get(vertexB).get(vertexA).incrementBetweenness(betweenness);
 		
 		return true;
+	}
+
+	/**
+	 * set/overwrite betweenness to edge attribute 
+	 * @param vertexA vertex at one end
+	 * @param vertexB vertex at one end
+	 * @param betweenness betweenness to set
+	 * @return True if edge exists and set/overwrite, False if edge doesn't exist
+	 */
+	public Boolean setBetweenness(V vertexA, V vertexB, Integer betweenness){
+		// return False if edge doesn't exist
+		if (!hasEdge(vertexA, vertexB))
+			return false;
+		
+		adjacencyList.get(vertexA).get(vertexB).setBetweenness(betweenness);
+		adjacencyList.get(vertexB).get(vertexA).setBetweenness(betweenness);
+		
+		return true;		
+	}
+	
+	/**
+	 * reset betweenness to 0 for edges
+	 */
+	public void resetBetweenness() {
+		for (V vertex : adjacencyList.keySet()) {
+			for (V neighbor : adjacencyList.get(vertex).keySet()) {
+				setBetweenness(vertex, neighbor, 0);
+			}
+		}
+	}
+	
+	/**
+	 * print betweenness for edges, skip 0
+	 */
+	public void printBetweenness(){
+		for (V vertex : adjacencyList.keySet()) {
+			for (V neighbor : adjacencyList.get(vertex).keySet()) {
+				if (adjacencyList.get(vertex).get(neighbor).getBetweenness() != 0)
+					System.out.println("=====betweenness for edge " + vertex + " <-> "+ neighbor + " = " + adjacencyList.get(vertex).get(neighbor).getBetweenness() + "====");
+			}
+		}
 	}
 	
 	/**

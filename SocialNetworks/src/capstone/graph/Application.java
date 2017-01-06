@@ -18,10 +18,37 @@ public class Application {
 		
 		Map<Integer, Integer> backTrackMap = g.shortestPathDijkstra(0);
 		
-		List<Integer> path = g.buildPath(backTrackMap, 1, 348);
+		List<Integer> path = g.buildPath(backTrackMap, 0, 348);
 		
-		System.out.println("path from 0 to 99 ===== " + path);
+		System.out.println("path from 0 to 348 ===== " + path);
+		
+		path = g.buildPath(backTrackMap, 0, 0);
+		
+		System.out.println("path from 0 to 0 ===== " + path);
+		
+		path = g.buildPath(backTrackMap, 0, 348);
+		
+		g.printEdgeBetweenness();
+		
+		g.calculateBetweenness(path);
 
+		g.printEdgeBetweenness();
+		
+		g.resetBetweenness();
+		
+		List<List<Integer>> superPath = g.buildPath(backTrackMap, 0);
+		
+		g.calculateAllBetweenness(superPath);
+		
+		g.printEdgeBetweenness();
+		
+		g.resetBetweenness();
+		
+		g.printEdgeBetweenness();
+		
+		g.algorithm();
+		
+		g.printEdgeBetweenness();
 	}
 
 }

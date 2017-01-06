@@ -18,21 +18,29 @@ public class UndirectedWeightedEdge<V> {
 	private V v1;
 	private V v2;
 	
-	private Map<String, String> attributes = new HashMap<String, String>();
+	private Map<String, String> attributes;
 	
 	public UndirectedWeightedEdge(){}
 	
+	/**
+	 * initialize weight to 1 and betweenness to 0
+	 * @param v1
+	 * @param v2
+	 */
 	public UndirectedWeightedEdge(V v1, V v2) {
 		this.v1 = v1;
 		this.v2 = v2;
+		attributes = new HashMap<String, String>();
+		attributes.put(ATTRIBUTE_WEIGHT, "1");
+		attributes.put(ATTRIBUTE_BETWEENNESS, "0");
 	}
 	
 	public void setWeight(Integer weight){
 		attributes.put(ATTRIBUTE_WEIGHT, String.valueOf(weight));
 	}
 	
-	public void setBetweenness(Integer betweenness){
-		attributes.put(ATTRIBUTE_BETWEENNESS, String.valueOf(betweenness));
+	public void incrementBetweenness(Integer betweenness){
+		attributes.put(ATTRIBUTE_BETWEENNESS, String.valueOf(getBetweenness() + betweenness));		
 	}
 	
 	public Integer getWeight(){

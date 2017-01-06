@@ -84,6 +84,24 @@ public class UndirectedWeightedAdjacencyList<V> implements AdjacencyList<V>{
 	}
 	
 	/**
+	 * increment betweenness to edge attribute 
+	 * @param vertexA vertex at one end
+	 * @param vertexB vertex at one end
+	 * @param betweenness betweenness to set
+	 * @return True if edge exists and set (it'll add to any existing betweenness for the edge), False if edge doesn't exist
+	 */
+	public Boolean incrementEdgeBetweenness(V vertexA, V vertexB, Integer betweenness){
+		// return False if edge doesn't exist
+		if (!hasEdge(vertexA, vertexB))
+			return false;
+		
+		adjacencyList.get(vertexA).get(vertexB).incrementBetweenness(betweenness);
+		adjacencyList.get(vertexB).get(vertexA).incrementBetweenness(betweenness);
+		
+		return true;
+	}
+	
+	/**
 	 * check if a vertex is present in the graph
 	 * @param vertex
 	 * @return true if present otherwise false

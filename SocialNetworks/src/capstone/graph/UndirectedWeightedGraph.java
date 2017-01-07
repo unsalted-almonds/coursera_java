@@ -3,10 +3,13 @@ package capstone.graph;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
+import java.util.Stack;
 
 public class UndirectedWeightedGraph<V> implements Graph<V> {
 	
@@ -32,12 +35,29 @@ public class UndirectedWeightedGraph<V> implements Graph<V> {
 		return adjacencyList.addEdge(vertexA, vertexB);
 	}
 	
+	
+	public void printEdgeToRemove(){
+		System.out.println("edge to remove: " + maxVertexA + " <-> " + maxVertexB + " with betweenness " + maxBetweenness);
+	}
+	
+	public boolean removeEdgeWithMaxBetweeness(){
+		return adjacencyList.removeEdge(maxVertexA, maxVertexB);
+	}
+	
 	public void algorithm(){
 		Set<V> vertices = getAllVertices();
 		
+		adjacencyList.resetBetweenness();
+		
+		maxVertexA = null;
+		maxVertexB = null;
+		maxBetweenness = 0;
+		
 		for (V vertex : vertices){			
 			calculateAllBetweenness(buildPath(shortestPathDijkstra(vertex), vertex));			
-		}		
+		}	
+		
+		printEdgeToRemove();
 	}
 	
 	public Set<V> getAllVertices(){
@@ -47,6 +67,108 @@ public class UndirectedWeightedGraph<V> implements Graph<V> {
 	public void resetBetweenness(){
 		adjacencyList.resetBetweenness();
 	}
+	
+	public Set<V> getNeighbors(V vertex){
+		return adjacencyList.getNeighbors(vertex);
+	}
+	
+	public List<List<V>> getConnectedComponents(){
+		
+		List<List<V>> result = new ArrayList<List<V>>();
+		List<V> singleResult = new ArrayList<V>();
+		
+		Set<V> visited = new HashSet<V>();
+		
+		Set<V> allVertices = getAllVertices();
+		
+		V startingVertex = null;
+				
+		while(visited.size() != allVertices.size()){
+			
+			for (V vertex : allVertices){
+				if (!visited.contains(vertex)){
+					startingVertex = vertex;
+					break;
+				}
+			}			
+			singleResult = bfs(startingVertex, visited);
+			result.add(singleResult);						
+		}		
+		return result;
+	}
+	
+	public List<V> bfs(V startingVertex, Set<V> visited){
+		
+		List<V> resultingVertices = new ArrayList<V>();
+		
+		Queue<V> queue = new LinkedList<V>();
+		queue.add(startingVertex);
+		visited.add(startingVertex);
+		
+		while (!queue.isEmpty()){
+			V vertex = queue.remove();
+			for (V neighbor : getNeighbors(vertex)){
+				if (!visited.contains(neighbor)){
+					queue.add(neighbor);
+					visited.add(neighbor);
+				}
+			}
+			//visited.add(vertex);
+			resultingVertices.add(vertex);
+		}		
+		return resultingVertices;		
+	}
+
+	private Stack<V> graphTraversal(UndirectedWeightedGraph<V> g, Stack<V> verticesStack){
+
+		Set<V> visited = new HashSet<V>();
+		Stack<V> finished = new Stack<V>();
+		
+		while (!verticesStack.isEmpty()){			
+			V vertex = verticesStack.pop();			
+			if (!visited.contains(vertex))
+				graphTraversal(g, vertex, visited ,finished);						
+		}
+		
+		return finished;
+	}
+
+//	private List<Graph> graphTraversalSecond(CapGraph g, Stack<Integer> verticesStack){
+//
+//		Set<Integer> visited = new HashSet<Integer>();
+//		Stack<Integer> finished = new Stack<Integer>();
+//		
+//		List<Graph> res = new ArrayList<Graph>();
+//		
+//		while (!verticesStack.isEmpty()){			
+//			Integer vertex = verticesStack.pop();			
+//			if (!visited.contains(vertex)){
+//				graphTraversal(g, vertex, visited ,finished);
+//				res.add(subGraph(g, finished));
+//			}			
+//		}
+//		
+//		return res;
+//	}
+	
+	private void graphTraversal(UndirectedWeightedGraph<V> g, V vertex, Set<V> visited ,Stack<V> finished){
+		
+		visited.add(vertex);
+		
+		for (V neighbor : g.getNeighbors(vertex)){
+			
+			if (!visited.contains(neighbor))
+				graphTraversal(g, neighbor, visited ,finished);
+		}		
+		finished.push(vertex);		
+	}
+	
+	private Stack<V> stackifyVertices(Set<V> vertices){
+		Stack<V> res = new Stack<V>();
+		for (V i : vertices)
+			res.push(i);
+		return res;
+	}	
 	
 	public List<List<V>> buildPath(Map<V, V> backTrackMap, V from){
 		

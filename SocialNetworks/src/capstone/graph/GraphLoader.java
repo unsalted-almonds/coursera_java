@@ -11,7 +11,7 @@ public class GraphLoader {
 	static final String FILE_TYPE_EGOFEAT = "egofeat";
 	static final String FILE_TYPE_FEAT = "feat";
 	static final String FILE_TYPE_FEATNAMES = "featnames";
-	static final String FILE_NAME_COMBINED_EDGES = "facebook_combined.txt";
+	static final String FILE_NAME_COMBINED_EDGES = "facebook_combined_0.txt";
 
 	public static void main(String args[]) throws Exception {
 		// inject corresponding adjacency list implementation

@@ -1,92 +1,48 @@
 package capstone.graph;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
+/**
+ * Interface for running the algorithm 
+ * @author Shilin
+ *
+ */
 public class Application {
 	
+	// feel free to change file destination
+	static final String FOLDER = "data/facebook";
+	static final String TEST_FILE = "facebook_combined_test.txt";
+	
+	/**
+	 * run algorithm, by default three times unless specified using input 
+	 * @param args number of times to run algorithm
+	 * @throws Exception
+	 */
 	public static void main(String args[]) throws Exception{
-		UndirectedWeightedGraph<Integer> g = new UndirectedWeightedGraph<Integer>();
-
-		GraphLoader.loadCapGraph(g);
-
-//		System.out.println("add edge between 0 and 1 = " + g.getAdjacencyList().addEdge(0, 1));
-//
-//		System.out.println("remove edge between 0 and 400 = " + g.getAdjacencyList().removeEdge(0, 400));
-//		System.out.println("add edge between 0 and 400 = " + g.getAdjacencyList().addEdge(0, 400));
-//		System.out.println("remove edge between 0 and 400 = " + g.getAdjacencyList().removeEdge(0, 400));
-//		
-//		Map<Integer, Integer> backTrackMap = g.shortestPathDijkstra(0);
-//		
-//		List<Integer> path = g.buildPath(backTrackMap, 0, 348);
-//		
-//		System.out.println("path from 0 to 348 ===== " + path);
-//		
-//		path = g.buildPath(backTrackMap, 0, 0);
-//		
-//		System.out.println("path from 0 to 0 ===== " + path);
-//		
-//		path = g.buildPath(backTrackMap, 0, 348);
-//		
-//		g.printEdgeBetweenness();
-//		
-//		g.calculateBetweenness(path);
-//
-//		g.printEdgeBetweenness();
-//		
-//		g.resetBetweenness();
-//		
-//		List<List<Integer>> superPath = g.buildPath(backTrackMap, 0);
-//		
-//		g.calculateAllBetweenness(superPath);
-//		
-//		g.printEdgeBetweenness();
-//		
-//		g.resetBetweenness();
-//		
-//		g.printEdgeBetweenness();
-//		
-//		g.algorithm();
 		
-		//g.printEdgeBetweenness();
+		// default number of times to run algorithm
+		int n = 3;
 		
-		//edge to remove: 1684 <-> 107 with betweenness 2642418
+		if (args.length != 0)
+			n = Integer.parseInt(args[0]);
+				
+		CapstoneGraph<Integer> g = new UndirectedWeightedGraph<Integer>();
 		
-//		List<List<Integer>> result = g.getConnectedComponents();
-//		
-//		System.out.println("number of connected components = " + result.size());
-//		
-//		Collections.sort(result.get(0));
-//		
-//		for (Integer node : result.get(0)){
-//			System.out.println(node);
-//		}
-		
-		//g.algorithm();
-
+		GraphLoader.loadCapGraph(g, FOLDER, TEST_FILE);
+        System.out.println("Graph Loaded...");
+        
 		List<List<Integer>> result;
-		
-		for (int i = 0; i < 500 * 4; i++){
-			g.algorithm();
-
-			result = g.getConnectedComponents();
-			
+		for (int i = 0; i < n; i++) {
+			result = g.detectCommunities();
 			System.out.println("number of connected components = " + result.size());
-			
-			for (List<Integer> list : result){
+			g.removeEdgeWithMaxBetweeness();
+			for (List<Integer> list : result) {
 				Collections.sort(list);
 				System.out.println("connected component is " + list);
-			}
-			
-			//g.printEdgeToRemove();
-			
-			g.removeEdgeWithMaxBetweeness();
-			
-			System.out.println("==========================");
-		}
+			}			
+		}		
+		
 		
 	}
 

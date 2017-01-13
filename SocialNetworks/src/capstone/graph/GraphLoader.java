@@ -14,26 +14,19 @@ public class GraphLoader {
 	static final String FILE_NAME_COMBINED_EDGES = "facebook_combined_0.txt";
 
 	public static void main(String args[]) throws Exception {
-		// inject corresponding adjacency list implementation
-		CapstoneGraph<Integer> g = new CapstoneGraph<Integer>(new UndirectedWeightedAdjacencyList<Integer>());
+		CapstoneGraph<Integer> g = new UndirectedWeightedGraph<Integer>();
 
-		loadCapGraph(g);
-
-		System.out.println("add edge between 0 and 1 = " + g.getAdjacencyList().addEdge(0, 1));
-
-		System.out.println("remove edge between 0 and 400 = " + g.getAdjacencyList().removeEdge(0, 400));
-		System.out.println("add edge between 0 and 400 = " + g.getAdjacencyList().addEdge(0, 400));
-		System.out.println("remove edge between 0 and 400 = " + g.getAdjacencyList().removeEdge(0, 400));
+		loadCapGraph(g, "data/facebook", FILE_NAME_COMBINED_EDGES);
 
 	}
 
-	public static void loadCapGraph(Graph<Integer> g) throws Exception {
+	public static void loadCapGraph(CapstoneGraph<Integer> g, String folder, String fileName) throws Exception {
 
-		loadEdges(g, "data/facebook", FILE_NAME_COMBINED_EDGES);
+		loadEdges(g, folder, fileName);
 
 	}
 
-	private static void loadEdges(Graph<Integer> g, String filePath, String fileName) throws FileNotFoundException {
+	private static void loadEdges(CapstoneGraph<Integer> g, String filePath, String fileName) throws FileNotFoundException {
 
 		Scanner sc = new Scanner(new File(filePath + "/" + fileName));
 

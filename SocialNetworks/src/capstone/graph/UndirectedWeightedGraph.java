@@ -9,9 +9,8 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Stack;
 
-public class UndirectedWeightedGraph<V> implements Graph<V> {
+public class UndirectedWeightedGraph<V> implements CapstoneGraph<V> {
 	
 	private UndirectedWeightedAdjacencyList<V> adjacencyList;
 	
@@ -35,16 +34,24 @@ public class UndirectedWeightedGraph<V> implements Graph<V> {
 		return adjacencyList.addEdge(vertexA, vertexB);
 	}
 	
-	
-	public void printEdgeToRemove(){
-		System.out.println("edge to remove: " + maxVertexA + " <-> " + maxVertexB + " with betweenness " + maxBetweenness);
+	@Override
+	public List<List<V>> detectCommunities() {
+		resetBetweenness();
+		algorithm();
+		return getConnectedComponents();
 	}
 	
-	public boolean removeEdgeWithMaxBetweeness(){
+	@Override
+	public Boolean removeEdgeWithMaxBetweeness(){
 		return adjacencyList.removeEdge(maxVertexA, maxVertexB);
 	}
 	
-	public void algorithm(){
+	
+	private void printEdgeToRemove(){
+		System.out.println("edge to remove: " + maxVertexA + " <-> " + maxVertexB + " with betweenness " + maxBetweenness);
+	}
+		
+	private void algorithm(){
 		Set<V> vertices = getAllVertices();
 		
 		adjacencyList.resetBetweenness();
@@ -60,19 +67,19 @@ public class UndirectedWeightedGraph<V> implements Graph<V> {
 		printEdgeToRemove();
 	}
 	
-	public Set<V> getAllVertices(){
+	private Set<V> getAllVertices(){
 		return adjacencyList.getAllVertices();
 	}
 	
-	public void resetBetweenness(){
+	private void resetBetweenness(){
 		adjacencyList.resetBetweenness();
 	}
 	
-	public Set<V> getNeighbors(V vertex){
+	private Set<V> getNeighbors(V vertex){
 		return adjacencyList.getNeighbors(vertex);
 	}
 	
-	public List<List<V>> getConnectedComponents(){
+	private List<List<V>> getConnectedComponents(){
 		
 		List<List<V>> result = new ArrayList<List<V>>();
 		List<V> singleResult = new ArrayList<V>();
@@ -97,7 +104,7 @@ public class UndirectedWeightedGraph<V> implements Graph<V> {
 		return result;
 	}
 	
-	public List<V> bfs(V startingVertex, Set<V> visited){
+	private List<V> bfs(V startingVertex, Set<V> visited){
 		
 		List<V> resultingVertices = new ArrayList<V>();
 		
@@ -119,58 +126,8 @@ public class UndirectedWeightedGraph<V> implements Graph<V> {
 		return resultingVertices;		
 	}
 
-	private Stack<V> graphTraversal(UndirectedWeightedGraph<V> g, Stack<V> verticesStack){
-
-		Set<V> visited = new HashSet<V>();
-		Stack<V> finished = new Stack<V>();
-		
-		while (!verticesStack.isEmpty()){			
-			V vertex = verticesStack.pop();			
-			if (!visited.contains(vertex))
-				graphTraversal(g, vertex, visited ,finished);						
-		}
-		
-		return finished;
-	}
-
-//	private List<Graph> graphTraversalSecond(CapGraph g, Stack<Integer> verticesStack){
-//
-//		Set<Integer> visited = new HashSet<Integer>();
-//		Stack<Integer> finished = new Stack<Integer>();
-//		
-//		List<Graph> res = new ArrayList<Graph>();
-//		
-//		while (!verticesStack.isEmpty()){			
-//			Integer vertex = verticesStack.pop();			
-//			if (!visited.contains(vertex)){
-//				graphTraversal(g, vertex, visited ,finished);
-//				res.add(subGraph(g, finished));
-//			}			
-//		}
-//		
-//		return res;
-//	}
 	
-	private void graphTraversal(UndirectedWeightedGraph<V> g, V vertex, Set<V> visited ,Stack<V> finished){
-		
-		visited.add(vertex);
-		
-		for (V neighbor : g.getNeighbors(vertex)){
-			
-			if (!visited.contains(neighbor))
-				graphTraversal(g, neighbor, visited ,finished);
-		}		
-		finished.push(vertex);		
-	}
-	
-	private Stack<V> stackifyVertices(Set<V> vertices){
-		Stack<V> res = new Stack<V>();
-		for (V i : vertices)
-			res.push(i);
-		return res;
-	}	
-	
-	public List<List<V>> buildPath(Map<V, V> backTrackMap, V from){
+	private List<List<V>> buildPath(Map<V, V> backTrackMap, V from){
 		
 		List<List<V>> result = new ArrayList<List<V>>();
 		
@@ -182,7 +139,7 @@ public class UndirectedWeightedGraph<V> implements Graph<V> {
 		return result;		
 	}
 	
-	public List<V> buildPath(Map<V, V> backTrackMap, V from, V to) {
+	private List<V> buildPath(Map<V, V> backTrackMap, V from, V to) {
 		
 		if (from != currentStartingNode)
 			throw new IllegalArgumentException("path not available, run algorithm on input from node first");
@@ -212,13 +169,13 @@ public class UndirectedWeightedGraph<V> implements Graph<V> {
 			throw new IllegalArgumentException("input node is not in graph");
 	}
 	
-	public void calculateAllBetweenness(List<List<V>> pathList){
+	private void calculateAllBetweenness(List<List<V>> pathList){
 		for (List<V> path : pathList){
 			calculateBetweenness(path);
 		}
 	}
 	
-	public void calculateBetweenness(List<V> path){
+	private void calculateBetweenness(List<V> path){
 		if (path == null || path.size() == 0){
 			//System.out.println("given path is empty");
 			return;
@@ -253,7 +210,7 @@ public class UndirectedWeightedGraph<V> implements Graph<V> {
 	}
 		
 	// get shortest path from one start node to every other node
-	public Map<V, V> shortestPathDijkstra(V startNode){	
+	private Map<V, V> shortestPathDijkstra(V startNode){	
 		// for now, fix weight as 1
 		final Integer weight = 1;
 		
@@ -307,15 +264,5 @@ public class UndirectedWeightedGraph<V> implements Graph<V> {
 		}else
 			throw new IllegalArgumentException("input node is not in graph");		
 	}
-	
-	public void printEdgeBetweenness(){
-		adjacencyList.printBetweenness();
-	}
-
-	UndirectedWeightedAdjacencyList<V> getAdjacencyList() {
-		return adjacencyList;
-	}
-	
-	
 	
 }

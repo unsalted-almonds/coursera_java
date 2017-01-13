@@ -3,14 +3,10 @@ package capstone.graph;
 public class DistanceNode<V> implements Comparable<DistanceNode<V>> {
 
 	private V val;
-	// private List<Boolean> feat;
+
 	// this is for using in Dijkstra algorithm
 	private Integer dist = Integer.MAX_VALUE;
 
-	/*
-	 * public CapNode (Integer nodeVal, Integer featSize){ val = nodeVal;
-	 * initFeatVector(featSize); }
-	 */
 	public DistanceNode(V val, Integer dist) {
 		super();
 		this.val = val;
@@ -24,12 +20,6 @@ public class DistanceNode<V> implements Comparable<DistanceNode<V>> {
 	public void setVal(V val) {
 		this.val = val;
 	}
-	// public List<Boolean> getFeat() {
-	// return feat;
-	// }
-	// public void setFeat(List<Boolean> feat) {
-	// this.feat = feat;
-	// }
 
 	public Integer getDist() {
 		return dist;

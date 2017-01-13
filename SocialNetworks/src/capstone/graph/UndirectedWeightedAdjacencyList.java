@@ -10,7 +10,7 @@ import java.util.Set;
  *
  * @param <V>
  */
-public class UndirectedWeightedAdjacencyList<V> implements AdjacencyList<V>{
+public class UndirectedWeightedAdjacencyList<V>{
 	
 	private Map<V, Map<V, UndirectedWeightedEdge<V>>> adjacencyList = new HashMap<V, Map<V, UndirectedWeightedEdge<V>>>();
 	
@@ -19,7 +19,6 @@ public class UndirectedWeightedAdjacencyList<V> implements AdjacencyList<V>{
 	 * @param vertex vertex needs to be added
 	 * @return True if the vertex is added successfully, false if this vertex already existed
 	 */
-	@Override
 	public Boolean addVertex(V vertex){
 		
 		if (hasVertex(vertex))
@@ -35,7 +34,6 @@ public class UndirectedWeightedAdjacencyList<V> implements AdjacencyList<V>{
 	 * @param vertexB vertex at one end
 	 * @return True if edge is added, False if an edge has already been established in which case this edge needs to be removed before being added
 	 */
-	@Override
 	public Boolean addEdge(V vertexA, V vertexB){
 		// if an edge is already there return false
 		// need to remove the existing edge before adding the same one
@@ -61,7 +59,6 @@ public class UndirectedWeightedAdjacencyList<V> implements AdjacencyList<V>{
 	 * @param vertexB vertex at one end
 	 * @return True if edge is removed, False if the edge doesn't exist
 	 */
-	@Override
 	public Boolean removeEdge(V vertexA, V vertexB){
 		// return False if edge doesn't exist
 		if (!hasEdge(vertexA, vertexB))
